@@ -15,12 +15,26 @@ const bandpass = digitalfilter(Bandpass(4 / (fs / 2), 32 / (fs / 2)), Butterwort
 
 function teste_load_data()
 
-    parser = ArgParse.ArgParser()
-    add_argument(parser, "--csv", help="Caminho do arquivo CSV", required=true)
-    args = parse_args(parser)
-    println("Caminho do CSV: ", args["csv"])
-    data = CSV.read(args["csv"], DataFrame; delim=",")
-    # data = CSV.read("dados.csv", DataFrame; delim=",")
+    s = ArgParseSettings()
+
+    @add_arg_table s begin
+        "--opt1"
+            help = "an option with an argument"
+        "--opt2", "-o"
+            help = "another option with an argument"
+            arg_type = Int
+            default = 0
+        "--flag1"
+            help = "an option without argument, i.e. a flag"
+            action = :store_true
+        "arg1"
+            help = "a positional argument"
+            required = true
+    end
+    args = parse_args(s)
+    file = args["arg1"]
+    print(file)
+    data = CSV.read(file, DataFrame; delim=",")
 
     markers = []
     for i in eachindex(data[:, 10])
